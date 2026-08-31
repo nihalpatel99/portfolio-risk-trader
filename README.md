@@ -37,7 +37,7 @@ AZURE_AI_PROJECT_ENDPOINT=<your Azure AI Foundry project endpoint>
 AZURE_AI_MODEL_DEPLOYMENT_NAME=<your deployed model name>
 ```
 
-## Usage
+## Usage — CLI
 
 ```bash
 python portfolio_risk.py
@@ -61,6 +61,35 @@ Holding 4 (blank to finish):
 Your risk tolerance (low / medium / high) [medium]: low
 Anything specific you want the Advisor to focus on? (optional): Should I trim my Apple position?
 ```
+
+## Usage — Web app
+
+The same workflow is also available behind a React frontend backed by a FastAPI server, so you can enter holdings in a form instead of the terminal.
+
+**1. Start the API** (from the project root, with the venv active and `.env` configured as above):
+
+```bash
+uvicorn api:app --reload --port 8000
+```
+
+**2. Start the frontend** (in a second terminal):
+
+```bash
+cd frontend
+npm install   # first time only
+npm run dev
+```
+
+Open the URL Vite prints (default `http://localhost:5173`). Add holdings in the form, set your risk tolerance and optional question, and submit — the three agents' turns appear as cards on the right as the analysis completes.
+
+The frontend calls the API at `http://localhost:8000` by default; override with a `VITE_API_URL` env var (e.g. in `frontend/.env`) if you run the API elsewhere.
+
+## Project layout
+
+- `portfolio_workflow.py` — shared agent definitions, the `calculate_portfolio_risk` tool, and the group chat orchestration. Used by both the CLI and the API.
+- `portfolio_risk.py` — terminal entry point (prompts for input, prints the conversation).
+- `api.py` — FastAPI server exposing `POST /api/analyze` for the frontend.
+- `frontend/` — Vite + React UI.
 
 ## Notes
 
